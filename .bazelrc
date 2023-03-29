@@ -153,12 +153,14 @@ build --experimental_link_static_libraries_once=false
 
 # Allow builds using libc++ as a linker library
 # This is mostly for OSSFuzz, so we also pass in the flags from environment to clean build file
-build:libc++ --action_env=CC
-build:libc++ --action_env=CXX
+build:libc++ --action_env=CC=clang-13
+build:libc++ --action_env=CXX=clang++-13
 build:libc++ --action_env=CXXFLAGS=-stdlib=libc++
-build:libc++ --action_env=PATH
+build:libc++ --action_env=LDFLAGS=-stdlib=libc++
+build:libc++ --action_env=BAZEL_CXXOPTS=-stdlib=libc++
+build:libc++ --action_env=BAZEL_LINKLIBS=-l%:libc++.a:-l%:libc++abi.a
+build:libc++ --action_env=BAZEL_LINKOPTS=-lm:-pthread
 build:libc++ --define force_libcpp=enabled
-build:libc++ --linkopt -fuse-ld=lld
 
 # Android configs. Bazel needs to have --cpu and --fat_apk_cpu both set to the
 # target CPU to build transient dependencies correctly. See
@@ -309,9 +311,9 @@ build:linux --copt="-Wno-extra"
 build:linux --copt="-Wno-deprecated"
 build:linux --copt="-Wno-deprecated-declarations"
 build:linux --copt="-Wno-ignored-attributes"
-build:linux --copt="-Wno-unknown-warning"
-build:linux --copt="-Wno-array-parameter"
-build:linux --copt="-Wno-stringop-overflow"
+# build:linux --copt="-Wno-unknown-warning"
+# build:linux --copt="-Wno-array-parameter"
+# build:linux --copt="-Wno-stringop-overflow"
 build:linux --copt="-Wno-array-bounds"
 
 # Add unused-result as an error on Linux.
